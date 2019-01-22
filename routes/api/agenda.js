@@ -12,7 +12,9 @@ router.get('/', (req, res) => {
         message: 'true',
       });
     }).catch((err) => {
-      console.log(err);
+      res.status(500).json({
+        message: err,
+      });
     });
 });
 
@@ -24,7 +26,9 @@ router.get('/:id', (req, res) => {
         message: 'true',
       });
     }).catch((err) => {
-      console.log(err);
+      res.status(500).json({
+        message: err,
+      });
     });
 });
 
