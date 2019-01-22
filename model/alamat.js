@@ -6,6 +6,10 @@ const alamatschema = new Schema({
   alamat: {
     type: String,
   },
+  userpost: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+  },
 });
 
 module.exports = model('Alamat', alamatschema);
