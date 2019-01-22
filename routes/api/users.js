@@ -23,7 +23,7 @@ router.get('/', (req, res, next) => {
 });
 
 router.get('/:id', (req,res) => {
-  UserModel.findAll({
+  UserSchema.findAll({
     where : {
       id: req.params.id
     }
@@ -39,11 +39,7 @@ router.get('/:id', (req,res) => {
 });
 
 router.post('/register', (req,res) => {
-  UserSchema.findAll({
-    where: {
-      email: req.body.email
-    }
-  }).then(user =>{
+  UserSchema.find().then(user =>{
     if(user.length >=1 ){
       res.status(409).json({
         message : 'data already exist !'
@@ -64,9 +60,9 @@ router.post('/register', (req,res) => {
             message: 'Invalid request data'
           });
         } else {
-          bcrypt.hash(req.body.password,10, function(err,hash){
+          bcrypt.hash(req.body.password,10, async function(err,hash){
           //  console.log(hash);
-            UserModel.create({
+              UserSchema.create({
               email: req.body.email,
               phone: req.body.phone,
               username: req.body.username,
@@ -113,7 +109,7 @@ router.post('/register', (req,res) => {
  },);
 
 router.delete('/:id', (req,res) => {
-  UserModel.destroy({
+  UserSchema.destroy({
     where : {
       id:req.params.id
     }
@@ -130,7 +126,7 @@ router.delete('/:id', (req,res) => {
 });
 
 router.put('/delete/:id', (req,res) => {
-  UserModel.update({
+  UserSchema.update({
     isDeleted : 1
   },{
     where :{
@@ -144,7 +140,7 @@ router.put('/delete/:id', (req,res) => {
 });
 
 router.post('/login', (req,res) => {
-  UserModel.findAll({
+  UserSchema.findAll({
     where: {
       email:req.body.email
     }
@@ -194,7 +190,7 @@ let storage = multer.diskStorage({
 });
 let upload = multer({ storage });
 router.put('/profile/:id', upload.single('file'), (req,res) => {
- UserModel.update({
+ UserSchema.update({
    image : req.file.path
   },{
      where: {
