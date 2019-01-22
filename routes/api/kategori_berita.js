@@ -13,7 +13,9 @@ router.get('/', (req, res) => {
       });
     })
     .catch((err) => {
-      console.log(err);
+      res.status(500).json({
+        message: err,
+      });
     });
 });
 
@@ -26,7 +28,9 @@ router.get('/:id', (req, res) => {
       });
     })
     .catch((err) => {
-      console.log(err);
+      res.status(500).json({
+        message: err,
+      });
     });
 });
 
