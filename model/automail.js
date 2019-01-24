@@ -1,8 +1,10 @@
 const { Schema } = require('mongoose');
 const { model } = require('mongoose');
 
-const kategorialbumschema = new Schema({
-  nama_kategori: {
+const automailschema = new Schema({
+  _id: Schema.Types.ObjectId,
+  subject: String,
+  message: {
     type: String,
   },
   userpost: {
@@ -11,4 +13,4 @@ const kategorialbumschema = new Schema({
   },
 });
 
-module.exports = model('Kategorialbum_schema', kategorialbumschema);
+module.exports = model('Automail', automailschema);

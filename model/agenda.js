@@ -10,7 +10,6 @@ const agendaschema = new Schema({
   tema_seo: String,
   isiAgenda: String,
   tempat: String,
-  pengirim: String,
   isDeleted: {
     type: Number,
     default: 0,
