@@ -2,6 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 const Joi = require('joi');
+const multer = require('multer');
 const AgendaSchema = require('../../model/agenda');
 
 router.get('/', (req, res) => {
@@ -32,11 +33,23 @@ router.get('/:id', (req, res) => {
     });
 });
 
-router.post('/', (req, res) => {
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/uploads');
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${file.fieldname}-${Date.now()}`);
+  },
+});
+
+const upload = multer({ storage });
+
+router.post('/', upload.single('file'), (req, res) => {
   const validator = Joi.object().keys({
-    tema: Joi.string().required(),
-    tema_seo: Joi.string().required(),
-    isiAgenda: Joi.string().required(),
+    tema: Joi.string().required().min(5),
+    tema_seo: Joi.string().required().min(5),
+    isiAgenda: Joi.string().required().min(10),
+    tempat: Joi.string().required().min(10),
   });
   const AgendaData = req.body;
   Joi.validate(AgendaData, validator, (err) => {
@@ -49,6 +62,11 @@ router.post('/', (req, res) => {
         tema: req.body.email,
         tema_seo: req.body.phone,
         isiAgenda: req.body.username,
+        tempat: req.body.tempat,
+        tgl_mulai: req.body.tgl_mulai,
+        tgl_selesai: req.body.tgl_selesai,
+        image: req.file.path,
+
       }).then((agenda) => {
         res.status(201).json({
           data: agenda,

@@ -11,6 +11,7 @@ const AlamatRouter = require('./routes/api/alamat');
 const AgendaRouter = require('./routes/api/agenda');
 const BeritaRouter = require('./routes/api/berita');
 const KategoriBRouter = require('./routes/api/kategori_berita');
+const AutomailRouter = require('./routes/api/automail');
 
 const app = express();
 
@@ -42,7 +43,8 @@ app.use('/api/agenda', AgendaRouter);
 app.use('/api/alamat', AlamatRouter);
 app.use('/api/users', UserRouter);
 app.use('/api/berita', BeritaRouter);
-app.use("/api/kategori_berita", KategoriBRouter);
+app.use('/api/kategori_berita', KategoriBRouter);
+app.use('/api/automail', AutomailRouter);
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
   next(createError(404));
