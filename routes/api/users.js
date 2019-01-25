@@ -5,6 +5,8 @@ const Joi = require('joi');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
+const passport = require('passport');
+const FacebookStrategy = require('passport-facebook').Strategy;
 const multer = require('multer');
 const UserSchema = require('../../model/user');
 /* GET users listing. */
@@ -18,7 +20,51 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
+router.get('/auth/facebook', passport.authenticate('facebook', { scope: 'email' }));
+router.get('/auth/facebook/callback', passport.authenticate('facebook',
+  { successRedirect: '/', failureRedirect: '/login' }));
+passport.serializeUser((user, done) => {
+  console.log(user);
+  // eslint-disable-next-line no-underscore-dangle
+  done(null, user._id);
+});
 
+passport.deserializeUser((id, done) => {
+  UserSchema.findById(id, (err, user) => {
+    done(err, user);
+  });
+});
+
+passport.use(
+  new FacebookStrategy(
+    {
+      clientID: process.env.FACEBOOK_APPID,
+      clientSecret: process.env.FACEBOOK_SECRET,
+      callbackURL: process.env.CALLBACK_FACEBOOKURL,
+      profileFields: ['id', 'displayName', 'emails'],
+    },
+    (accessToken, refreshToken, profile) => {
+      console.log(profile);
+      const me = new UserSchema({
+        email: profile.emails[0].value,
+        name: profile.displayName,
+      });
+
+      /* save if new */
+      UserSchema.findOne({ email: me.email }, (err, u) => {
+        if (!u) {
+          me.save((res) => {
+            res.status(500).json({
+              message: 'Internal Server Error',
+            });
+          });
+        } else {
+          console.log(u);
+        }
+      });
+    },
+  ),
+);
 router.get('/', (req, res) => {
   UserSchema.find().then((users) => {
     res.status(200)

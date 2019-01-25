@@ -6,12 +6,14 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const passport = require('passport');
 const UserRouter = require('./routes/api/users');
 const AlamatRouter = require('./routes/api/alamat');
 const AgendaRouter = require('./routes/api/agenda');
 const BeritaRouter = require('./routes/api/berita');
 const KategoriBRouter = require('./routes/api/kategori_berita');
 const AutomailRouter = require('./routes/api/automail');
+const AngkatanRouter = require('./routes/api/angkatan');
 
 const app = express();
 
@@ -45,11 +47,13 @@ app.use('/api/users', UserRouter);
 app.use('/api/berita', BeritaRouter);
 app.use('/api/kategori_berita', KategoriBRouter);
 app.use('/api/automail', AutomailRouter);
+app.use('/api/angkatan', AngkatanRouter);
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
   next(createError(404));
 });
-
+app.use(passport.initialize());
+app.use(passport.session());
 // error handler
 app.use((err, req, res) => {
   // set locals, only providing error in development
