@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const userschema = new Schema({
+  _id: mongoose.Schema.Types.ObjectId,
   phone: {
     type: String,
   },
@@ -18,11 +19,12 @@ const userschema = new Schema({
   },
   isDeleted: {
     type: Number,
-    default: 0,
+    default: null,
   },
+  method: String,
   isLevel: {
     type: Number,
-    default: 0,
+    default: null,
   },
   image: String,
 });

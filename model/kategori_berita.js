@@ -1,12 +1,13 @@
-const { Schema } = require('mongoose');
-const { model } = require('mongoose');
+const { Schema, model } = require('mongoose');
+const mongoose = require('mongoose');
 
 const kategoriberitaschema = new Schema({
+  _id: mongoose.Schema.Types.ObjectId,
   nama_kategori: {
     type: String,
   },
   isDeleted: Number,
-  userpost: {
+  userPost: {
     type: Schema.Types.ObjectId,
     ref: 'User',
   },

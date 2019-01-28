@@ -1,6 +1,7 @@
 const express = require('express');
 
 const router = express.Router();
+const mongoose = require('mongoose');
 const Joi = require('joi');
 const AngkatanSchema = require('../../model/angkatan');
 
@@ -19,6 +20,7 @@ router.get('/', (req, res) => {
 router.post('/', (req, res) => {
   const validator = Joi.object().keys({
     tahun_masuk: Joi.string().required(),
+    userPost: Joi.string(),
   });
   const AngkatanData = req.body;
   Joi.validate(AngkatanData, validator, (err) => {
@@ -27,13 +29,25 @@ router.post('/', (req, res) => {
         message: 'Error Insert Data',
       });
     } else {
-      AngkatanSchema.create({
-        tahun_masuk: req.body.tahun_masuk,
-      }).then((data) => {
-        res.status(200).json({
-          message: 'Success Insert',
-          data,
-        });
+      AngkatanSchema.find(
+        { tahun_masuk: req.body.tahun_masuk },
+      ).then((result) => {
+        if (result.length > 0) {
+          res.status(409).json({
+            message: 'Data Already Exist',
+          });
+        } else {
+          AngkatanSchema.create({
+            _id: mongoose.Types.ObjectId(),
+            tahun_masuk: req.body.tahun_masuk,
+            userPost: req.body.userPost,
+          }).then((data) => {
+            res.status(200).json({
+              message: 'Success Insert',
+              data,
+            });
+          });
+        }
       });
     }
   });

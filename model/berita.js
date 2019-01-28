@@ -4,9 +4,6 @@ const { Schema } = mongoose;
 
 const beritaschema = new Schema({
   _id: mongoose.Schema.Types.ObjectId,
-  judul_album: {
-    type: String,
-  },
   id_kategori_berita: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'kategori_berita',
@@ -21,16 +18,16 @@ const beritaschema = new Schema({
     type: String,
   },
   judul_seo: String,
-  headline: String,
+  headline: {
+    type: Number,
+    default: null,
+  },
   isiBerita: String,
   isAktif: {
     type: Number,
     default: null,
   },
   gambar: {
-    type: String,
-  },
-  hitsalbum: {
     type: String,
   },
   isDeleted: {
@@ -40,6 +37,14 @@ const beritaschema = new Schema({
   id_kategori_album: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'kategori_album',
+  },
+  userApprove: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  },
+  userPost: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
   },
 });
 

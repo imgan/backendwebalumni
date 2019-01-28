@@ -2,6 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 const Joi = require('joi');
+const mongoose = require('mongoose');
 const multer = require('multer');
 const AgendaSchema = require('../../model/agenda');
 
@@ -48,24 +49,28 @@ router.post('/', upload.single('file'), (req, res) => {
   const validator = Joi.object().keys({
     tema: Joi.string().required().min(5),
     tema_seo: Joi.string().required().min(5),
-    isiAgenda: Joi.string().required().min(10),
-    tempat: Joi.string().required().min(10),
+    isiAgenda: Joi.string().required(),
+    tempat: Joi.string().required(),
+    image: Joi.string(),
+    userPost: Joi.string(),
   });
   const AgendaData = req.body;
   Joi.validate(AgendaData, validator, (err) => {
     if (err) {
       res.status(402).json({
-        message: 'Data Cannot be null',
+        message: 'Invalid Request Data',
       });
     } else {
       AgendaSchema.create({
-        tema: req.body.email,
-        tema_seo: req.body.phone,
-        isiAgenda: req.body.username,
+        _id: mongoose.Types.ObjectId(),
+        tema: req.body.tema,
+        tema_seo: req.body.tema_seo,
+        isiAgenda: req.body.isiAgenda,
         tempat: req.body.tempat,
         tgl_mulai: req.body.tgl_mulai,
         tgl_selesai: req.body.tgl_selesai,
-        image: req.file.path,
+        // image: req.file.path,
+        userPost: req.body.userPost,
 
       }).then((agenda) => {
         res.status(201).json({
@@ -109,16 +114,15 @@ router.put('/:id', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
-  AgendaSchema.findByIdAndDelete(req.params.id, (err, value) => {
-    if (value.length > 1) {
-      res.status(404).json({
-        message: 'Data Not Found',
-        data: value,
-      });
-    } else {
+  AgendaSchema.findByIdAndDelete(req.params.id, (err, result) => {
+    if (result) {
       res.status(201).json({
         message: 'Delete Succes',
         data: `Id ${req.params.id} Deleted`,
+      });
+    } else {
+      res.status(404).json({
+        message: 'Data Not Found',
       });
     }
   });

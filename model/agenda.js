@@ -20,7 +20,7 @@ const agendaschema = new Schema({
   tglselesai: Date,
   dibaca: Number,
   image: String,
-  userpost: {
+  userPost: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   },

@@ -8,6 +8,7 @@ const bcrypt = require('bcrypt');
 const passport = require('passport');
 const FacebookStrategy = require('passport-facebook').Strategy;
 const multer = require('multer');
+const mongoose = require('mongoose');
 const UserSchema = require('../../model/user');
 /* GET users listing. */
 const storage = multer.diskStorage({
@@ -43,7 +44,8 @@ passport.use(
       callbackURL: process.env.CALLBACK_FACEBOOKURL,
       profileFields: ['id', 'displayName', 'emails'],
     },
-    (accessToken, refreshToken, profile) => {
+    // eslint-disable-next-line no-unused-vars
+    (accessToken, refreshToken, profile, done) => {
       console.log(profile);
       const me = new UserSchema({
         email: profile.emails[0].value,
@@ -115,6 +117,7 @@ router.post('/register', (req, res) => {
         if (err) {
           res.status(402).json({
             message: 'Invalid request data',
+            err,
           });
         } else {
           // eslint-disable-next-line no-shadow
@@ -125,11 +128,13 @@ router.post('/register', (req, res) => {
             const pesan = `Selamat datang di Team Alpha Online <b>Username</b> Kamu adalah ${username} dan <b>Password</b> ${password}`;
             // console.log(pesan);
             UserSchema.create({
+              _id: mongoose.Types.ObjectId(),
               email: req.body.email,
               phone: req.body.phone,
               username: req.body.username,
               password: hash,
               image: req.body.image,
+              method: 'web',
             })
               // eslint-disable-next-line no-shadow
               .then((user) => {
@@ -174,28 +179,26 @@ router.post('/register', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
-  UserSchema.findOneAndDelete(req.params.id).then((user) => {
-    res.status(200).json({
-      message: 'User Deleted',
-      data: user,
-    });
-  }).catch((err) => {
-    res.json({
-      message: `Delete Failed${err}`,
-    });
+  UserSchema.findOneAndDelete(req.params.id).then((result) => {
+    if (result) {
+      res.status(200).json({
+        message: 'User Deleted',
+        data: result,
+      });
+    } else {
+      res.status(404).json({
+        message: 'User Not Found',
+      });
+    }
   });
 });
 
-router.put('/delete/:id', (req, res) => {
-  UserSchema.update({
-    isDeleted: 1,
-  }, {
-    where: {
-      id: req.params.id,
-    },
+router.put('/:id', (req, res) => {
+  UserSchema.findByIdAndUpdate(req.params.id, {
+    $set: req.body,
   }).then(() => {
     res.status(200).json({
-      data: 'User Deleted',
+      data: 'User Updated',
     });
   });
 });
