@@ -92,7 +92,7 @@ router.post('/', (req, res) => {
       try {
         const emails = await listemail();
         // eslint-disable-next-line no-unused-vars
-        const sendmails = await sendmail(emails, AutomailData);
+        await sendmail(emails, AutomailData);
         AutomailSchema.create({
           _id: new mongoose.Types.ObjectId(),
           subject: req.body.subject,
